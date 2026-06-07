@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grilos de Telêmaco Borba</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;1,400&family=Space+Mono:wght@700&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  min-height: 100vh;
+  background: #080d06;
+  color: #c8e6a0;
+  font-family: 'Space Mono', monospace;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  gap: 1.5rem;
+}
+
+.badge {
+  font-size: .65rem;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: #6dba3a;
+  border: 1px solid rgba(109,186,58,.3);
+  border-radius: 100px;
+  padding: .35rem 1rem;
+}
+
+.title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2rem, 6vw, 3.5rem);
+  font-weight: 400;
+  text-align: center;
+  line-height: 1.15;
+}
+.title em { font-style: italic; color: #9de05a; }
+
+.sub {
+  font-size: .62rem;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: #3d5c25;
+  text-align: center;
+}
+
+/* O contador */
+.counter-box {
+  background: #0e1a09;
+  border: 1px solid #1e3312;
+  border-radius: 12px;
+  padding: 2rem 2.5rem;
+  text-align: center;
+  box-shadow: 0 0 60px rgba(109,186,58,.08), 0 8px 40px rgba(0,0,0,.6);
+}
+
+.counter-label {
+  font-size: .6rem;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: #3d5c25;
+  margin-bottom: .8rem;
+}
+
+.counter-value {
+  font-family: 'Space Mono', monospace;
+  font-size: clamp(3rem, 12vw, 7rem);
+  font-weight: 700;
+  color: #9de05a;
+  text-shadow: 0 0 30px rgba(109,186,58,.5);
+  letter-spacing: .05em;
+  transition: opacity .25s ease, transform .25s ease;
+}
+
+.counter-value.flash {
+  opacity: 0;
+  transform: scale(.97);
+}
+
+/* live dot */
+.live {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  font-size: .62rem;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  color: #6dba3a;
+}
+.live-dot {
+  width: 7px; height: 7px;
+  background: #6dba3a;
+  border-radius: 50%;
+  box-shadow: 0 0 8px #6dba3a;
+  animation: pulse 1.6s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%,100% { opacity:1; transform:scale(1); }
+  50%      { opacity:.3; transform:scale(.6); }
+}
+
+.info-row {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.info-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .25rem;
+}
+.info-label { font-size: .58rem; letter-spacing: .18em; text-transform: uppercase; color: #3d5c25; }
+.info-value  { font-size: .75rem; color: #c8e6a0; opacity: .8; }
+
+/* grilos decorativos */
+.crickets {
+  position: fixed;
+  bottom: 1rem;
+  left: 0; right: 0;
+  display: flex;
+  justify-content: space-around;
+  pointer-events: none;
+  font-size: 1.3rem;
+  opacity: .1;
+  filter: sepia(1) hue-rotate(60deg);
+}
+.cri { animation: sway 4s ease-in-out infinite; }
+.cri:nth-child(2) { animation-delay: .7s; font-size: 1rem; }
+.cri:nth-child(3) { animation-delay: 1.4s; }
+.cri:nth-child(4) { animation-delay: .3s; font-size: .9rem; }
+.cri:nth-child(5) { animation-delay: 1.8s; font-size: 1.1rem; }
+@keyframes sway {
+  0%,100% { transform: translateY(0) rotate(-4deg); }
+  50%      { transform: translateY(-8px) rotate(4deg); }
+}
+</style>
+</head>
+<body>
+
+<div class="badge">📍 Telêmaco Borba · Paraná · Brasil</div>
+
+<div>
+  <h1 class="title">Grilos <em>vivos</em><br>agora</h1>
+  <p class="sub" style="margin-top:.6rem">Estimativa populacional em tempo real</p>
+</div>
+
+<div class="counter-box">
+  <div class="counter-label">grilos detectados</div>
+  <div class="counter-value" id="counter">378.000</div>
+</div>
+
+<div class="live">
+  <div class="live-dot"></div>
+  atualizando em tempo real
+</div>
+
+<div class="info-row">
+  <div class="info-item">
+    <span class="info-label">Espécie</span>
+    <span class="info-value">Gryllus assimilis</span>
+  </div>
+  <div class="info-item">
+    <span class="info-label">Área</span>
+    <span class="info-value">Zona rural + urbana</span>
+  </div>
+  <div class="info-item">
+    <span class="info-label">Horário</span>
+    <span class="info-value" id="clock">--:--:--</span>
+  </div>
+</div>
+
+<div class="crickets">
+  <span class="cri">🦗</span>
+  <span class="cri">🦗</span>
+  <span class="cri">🦗</span>
+  <span class="cri">🦗</span>
+  <span class="cri">🦗</span>
+</div>
+
+<script>
+let value = 378000;
+const el = document.getElementById('counter');
+
+function fmt(n) {
+  return n.toLocaleString('pt-BR');
+}
+
+function update() {
+  const delta = 1 + Math.floor(Math.random() * 2); // 1 ou 2
+  const dir   = Math.random() > .5 ? 1 : -1;
+  value = Math.max(0, value + delta * dir);
+
+  // flash: some e volta
+  el.classList.add('flash');
+  setTimeout(() => {
+    el.textContent = fmt(value);
+    el.classList.remove('flash');
+  }, 260);
+}
+
+function scheduleNext() {
+  const delay = 1800 + Math.random() * 1700;
+  setTimeout(() => { update(); scheduleNext(); }, delay);
+}
+
+// clock
+setInterval(() => {
+  const n = new Date(), p = x => String(x).padStart(2,'0');
+  document.getElementById('clock').textContent =
+    `${p(n.getHours())}:${p(n.getMinutes())}:${p(n.getSeconds())}`;
+}, 1000);
+
+el.textContent = fmt(value);
+scheduleNext();
+</script>
+</body>
+</html>

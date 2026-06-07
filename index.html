@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contador de Grilos - Telêmaco Borba</title>
+  <style>
+    /* Estilos básicos */
+    body {
+      background-color: #202124;
+      color: #e8eaed;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      font-family: Arial, sans-serif;
+      margin: 0;
+    }
+
+    h1 {
+      font-size: 3em;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    h2 {
+      font-size: 2em;
+      margin-top: 5px;
+      color: #8ab4f8;
+      text-align: center;
+    }
+
+    .counter-box {
+      background: #282c34;
+      padding: 20px 50px;
+      border-radius: 15px;
+      box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.4);
+      margin-top: 20px;
+    }
+
+    .counter {
+      font-size: 4em;
+      font-weight: bold;
+      color: #4caf50;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <h1>Contador de Grilos</h1>
+  <h2>Telêmaco Borba - PR</h2>
+  <div class="counter-box">
+    <div id="counter" class="counter">53.742.918</div>
+  </div>
+
+  <script>
+    // Valor inicial do contador e incrementos
+    let contador = 53742918; // Valor inicial
+    const incrementoMin = 3; // Incremento mínimo
+    const incrementoMax = 10; // Incremento máximo
+
+    // Função que atualiza o contador
+    setInterval(() => {
+      // Gera um incremento aleatório entre o mínimo e o máximo
+      const incremento = Math.floor(Math.random() * (incrementoMax - incrementoMin + 1)) + incrementoMin;
+
+      // Incrementa o contador
+      contador += incremento;
+
+      // Atualiza o valor do contador no site
+      document.getElementById("counter").textContent = contador.toLocaleString("pt-BR");
+    }, 1000); // Atualiza a cada 1 segundo
+  </script>
+</body>
+</html>

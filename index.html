@@ -19,13 +19,13 @@
     }
 
     h1 {
-      font-size: 3em;
+      font-size: 2.5em;
       margin-bottom: 10px;
       text-align: center;
     }
 
     h2 {
-      font-size: 2em;
+      font-size: 1.5em;
       margin-top: 5px;
       color: #8ab4f8;
       text-align: center;
@@ -33,14 +33,14 @@
 
     .counter-box {
       background: #282c34;
-      padding: 20px 50px;
+      padding: 10px 30px;
       border-radius: 15px;
       box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.4);
       margin-top: 20px;
     }
 
     .counter {
-      font-size: 4em;
+      font-size: 2.5em;
       font-weight: bold;
       color: #4caf50;
       text-align: center;
@@ -53,8 +53,8 @@
     .digit {
       position: relative;
       display: inline-block;
-      width: 40px;
-      height: 80px;
+      width: 30px;
+      height: 60px;
       perspective: 1000px;
     }
 
@@ -65,13 +65,43 @@
       width: 100%;
       height: 100%;
       text-align: center;
-      line-height: 80px;
-      font-size: 4em;
+      line-height: 60px;
+      font-size: 2.5em;
       font-weight: bold;
       color: #4caf50;
       transform-origin: center bottom;
       transform: rotateX(0deg);
       transition: transform 0.5s ease-in-out;
+    }
+
+    /* Estilos responsivos */
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 2em;
+      }
+
+      h2 {
+        font-size: 1.2em;
+      }
+
+      .counter-box {
+        padding: 5px 20px;
+      }
+
+      .counter {
+        font-size: 2em;
+        gap: 3px;
+      }
+
+      .digit {
+        width: 20px;
+        height: 40px;
+      }
+
+      .digit span {
+        font-size: 2em;
+        line-height: 40px;
+      }
     }
   </style>
 </head>
@@ -119,10 +149,10 @@
       const variar = Math.random() < 0.5 ? -1 : 1;
 
       // Incrementa ou decrementa um pequeno valor entre 0 e 3 dígitos
-      const variacao = Math.floor(Math.random() * 8) * variar;
+      const variacao = Math.floor(Math.random() * 6) * variar;
 
       // Calcula o novo valor com limite de variação
-      valorAtual = Math.max(valorInicial - 50, Math.min(valorAtual + variacao, valorInicial + 50));
+      valorAtual = Math.max(valorInicial - 30, Math.min(valorAtual + variacao, valorInicial + 30));
 
       // Renderiza o contador no site
       renderCounter(valorAtual);

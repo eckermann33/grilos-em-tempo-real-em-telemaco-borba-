@@ -1,0 +1,647 @@
+cat > /mnt/user-data/outputs/grilos-telemaco.html << 'HTMLEOF'
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Insetos do Paraná</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #080d06;
+  --surface: #0e1a09;
+  --border: #1e3312;
+  --text: #c8e6a0;
+  --muted: #3d5c25;
+  --accent: #6dba3a;
+  --accent2: #9de05a;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Space Mono', monospace;
+}
+
+/* ─── HEADER ─── */
+.site-header {
+  text-align: center;
+  padding: 3rem 1rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+.site-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.8rem, 5vw, 3.2rem);
+  font-weight: 400;
+  line-height: 1.1;
+}
+.site-title em { font-style: italic; color: var(--accent2); }
+.site-sub {
+  font-size: .62rem;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-top: .6rem;
+}
+
+/* ─── CITY TABS ─── */
+.city-tabs {
+  display: flex;
+  overflow-x: auto;
+  gap: .5rem;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+  scrollbar-width: none;
+}
+.city-tabs::-webkit-scrollbar { display: none; }
+
+.city-tab {
+  flex-shrink: 0;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  padding: .4rem 1.1rem;
+  font-family: 'Space Mono', monospace;
+  font-size: .62rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all .2s;
+  white-space: nowrap;
+}
+.city-tab:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.city-tab.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #080d06;
+}
+
+/* ─── CITY PANEL ─── */
+.city-panel { display: none; padding: 2rem 1.5rem; max-width: 900px; margin: 0 auto; }
+.city-panel.active { display: block; }
+
+.city-header {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  margin-bottom: .4rem;
+  flex-wrap: wrap;
+}
+.city-name {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.4rem, 4vw, 2.2rem);
+  font-weight: 400;
+}
+.city-region {
+  font-size: .6rem;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.city-desc {
+  font-size: .7rem;
+  color: var(--muted);
+  line-height: 1.6;
+  margin-bottom: 1.8rem;
+  max-width: 560px;
+}
+
+/* ─── INSECT SELECT ─── */
+.insect-select-wrap {
+  margin-bottom: 2rem;
+}
+.insect-select-label {
+  font-size: .6rem;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  display: block;
+  margin-bottom: .6rem;
+}
+.insect-select {
+  appearance: none;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: .65rem 2.5rem .65rem 1rem;
+  font-family: 'Space Mono', monospace;
+  font-size: .72rem;
+  color: var(--text);
+  cursor: pointer;
+  min-width: 260px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%233d5c25' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right .9rem center;
+  transition: border-color .2s;
+}
+.insect-select:focus { outline: none; border-color: var(--accent); }
+
+/* ─── COUNTER CARD ─── */
+.counter-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .8rem;
+  box-shadow: 0 0 60px rgba(109,186,58,.07), 0 8px 40px rgba(0,0,0,.5);
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 2rem;
+}
+.counter-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 60% 50% at 50% 0%, rgba(109,186,58,.06), transparent 70%);
+  pointer-events: none;
+}
+
+.insect-icon { font-size: 2.8rem; line-height: 1; }
+.insect-name-display {
+  font-size: .62rem;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.insect-sci {
+  font-size: .58rem;
+  letter-spacing: .1em;
+  color: var(--muted);
+  opacity: .7;
+  font-style: italic;
+}
+
+.counter-value {
+  font-family: 'Space Mono', monospace;
+  font-size: clamp(2.8rem, 10vw, 5.5rem);
+  font-weight: 700;
+  color: var(--accent2);
+  text-shadow: 0 0 30px rgba(109,186,58,.45);
+  letter-spacing: .05em;
+  transition: opacity .22s ease, transform .22s ease;
+}
+.counter-value.flash { opacity: 0; transform: scale(.96); }
+
+.live {
+  display: flex; align-items: center; gap: .5rem;
+  font-size: .58rem; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--accent); opacity: .8;
+}
+.live-dot {
+  width: 6px; height: 6px;
+  background: var(--accent); border-radius: 50%;
+  box-shadow: 0 0 7px var(--accent);
+  animation: pdot 1.6s ease-in-out infinite;
+}
+@keyframes pdot { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:.3;transform:scale(.6);} }
+
+/* ─── SUGGEST BOX ─── */
+.suggest-section {
+  margin-top: 2.5rem;
+  padding-top: 2.5rem;
+  border-top: 1px solid var(--border);
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+.suggest-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.4rem;
+  font-weight: 400;
+  margin-bottom: .4rem;
+}
+.suggest-title em { font-style: italic; color: var(--accent2); }
+.suggest-sub {
+  font-size: .62rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 1.4rem;
+}
+
+.suggest-form {
+  display: flex;
+  gap: .7rem;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+}
+.suggest-input {
+  flex: 1;
+  min-width: 200px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: .65rem 1rem;
+  font-family: 'Space Mono', monospace;
+  font-size: .72rem;
+  color: var(--text);
+  transition: border-color .2s;
+}
+.suggest-input::placeholder { color: var(--muted); }
+.suggest-input:focus { outline: none; border-color: var(--accent); }
+
+.suggest-btn {
+  background: var(--accent);
+  border: none;
+  border-radius: 8px;
+  padding: .65rem 1.4rem;
+  font-family: 'Space Mono', monospace;
+  font-size: .68rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: #080d06;
+  cursor: pointer;
+  font-weight: 700;
+  transition: background .2s, transform .1s;
+}
+.suggest-btn:hover { background: var(--accent2); }
+.suggest-btn:active { transform: scale(.97); }
+
+.suggest-feedback {
+  font-size: .65rem;
+  color: var(--accent);
+  opacity: 0;
+  transition: opacity .3s;
+  margin-top: -.8rem;
+  margin-bottom: 1rem;
+  height: 1rem;
+}
+.suggest-feedback.show { opacity: 1; }
+
+/* ─── WISHLIST ─── */
+.wishlist-title {
+  font-size: .6rem;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 1rem;
+}
+
+.wishlist {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .6rem;
+}
+
+.wish-tag {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  padding: .35rem .9rem;
+  font-size: .65rem;
+  color: var(--text);
+  opacity: .85;
+  transition: border-color .2s;
+}
+.wish-tag:hover { border-color: var(--accent); }
+.wish-votes {
+  background: rgba(109,186,58,.15);
+  color: var(--accent);
+  border-radius: 100px;
+  padding: .1rem .45rem;
+  font-size: .58rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background .2s;
+}
+.wish-votes:hover { background: rgba(109,186,58,.35); }
+
+/* ─── FOOTER ─── */
+.site-footer {
+  text-align: center;
+  padding: 2rem 1rem;
+  border-top: 1px solid var(--border);
+  margin-top: 3rem;
+  font-size: .58rem;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  color: var(--muted);
+  opacity: .6;
+}
+
+/* crickets deco */
+.crickets {
+  position: fixed; bottom: .8rem; left: 0; right: 0;
+  display: flex; justify-content: space-around;
+  pointer-events: none; font-size: 1.2rem; opacity: .08;
+  filter: sepia(1) hue-rotate(60deg);
+}
+.cri { animation: sw 4s ease-in-out infinite; }
+.cri:nth-child(2){animation-delay:.7s;font-size:.9rem;}
+.cri:nth-child(3){animation-delay:1.3s;}
+.cri:nth-child(4){animation-delay:.4s;font-size:1rem;}
+.cri:nth-child(5){animation-delay:1.9s;font-size:.85rem;}
+@keyframes sw {
+  0%,100%{transform:translateY(0) rotate(-4deg);}
+  50%{transform:translateY(-7px) rotate(4deg);}
+}
+</style>
+</head>
+<body>
+
+<!-- deco -->
+<div class="crickets">
+  <span class="cri">🦗</span><span class="cri">🦟</span><span class="cri">🪲</span>
+  <span class="cri">🦗</span><span class="cri">🦟</span>
+</div>
+
+<!-- HEADER -->
+<header class="site-header">
+  <h1 class="site-title">Insetos <em>vivos</em> do Paraná</h1>
+  <p class="site-sub">Estimativa populacional em tempo real · Paraná, Brasil</p>
+</header>
+
+<!-- CITY TABS -->
+<nav class="city-tabs" id="cityTabs"></nav>
+
+<!-- CITY PANELS -->
+<main id="cityPanels"></main>
+
+<!-- SUGGEST -->
+<section class="suggest-section">
+  <h2 class="suggest-title">Sugira o <em>próximo</em> inseto</h2>
+  <p class="suggest-sub">Qual inseto você quer ver aqui? Mande sua sugestão</p>
+  <div class="suggest-form">
+    <input class="suggest-input" id="suggestInput" type="text" maxlength="60"
+      placeholder="ex: Borboleta-azul, Mariposa-esfinge...">
+    <button class="suggest-btn" onclick="submitSuggestion()">Sugerir →</button>
+  </div>
+  <div class="suggest-feedback" id="suggestFeedback">✓ Sugestão enviada! Obrigado</div>
+  <div class="wishlist-title">🗳 Insetos mais pedidos</div>
+  <div class="wishlist" id="wishlist"></div>
+</section>
+
+<footer class="site-footer">
+  Telêmaco Borba · Paraná · Brasil — estimativas baseadas em densidade ecológica regional
+</footer>
+
+<script>
+// ════════════════════════════════════════════════
+// DADOS
+// ════════════════════════════════════════════════
+const CITIES = [
+  {
+    id: 'telemaco',
+    name: 'Telêmaco Borba',
+    region: 'Centro-Leste · PR',
+    desc: 'Região de Campos Gerais com floresta de araucárias e várzeas do rio Tibagi. Alta biodiversidade de insetos nocturnos.',
+    insects: [
+      { id: 'grilo',    name: 'Grilo-do-campo',     sci: 'Gryllus assimilis',       icon: '🦗', base: 378000 },
+      { id: 'aranha',   name: 'Aranha-marrom',       sci: 'Loxosceles intermedia',   icon: '🕷️', base: 210000 },
+      { id: 'libelula', name: 'Libélula-imperador',  sci: 'Tramea binotata',         icon: '🪰', base: 95000  },
+      { id: 'besouro',  name: 'Besouro-da-araucária',sci: 'Migdolus fryanus',        icon: '🪲', base: 143000 },
+    ]
+  },
+  {
+    id: 'curitiba',
+    name: 'Curitiba',
+    region: 'Capital · PR',
+    desc: 'Capital paranaense com amplas áreas verdes, parques urbanos e clima subtropical úmido. Diversidade entomológica elevada.',
+    insects: [
+      { id: 'grilo',    name: 'Grilo-doméstico',     sci: 'Acheta domesticus',       icon: '🦗', base: 1240000 },
+      { id: 'aranha',   name: 'Aranha-de-jardim',    sci: 'Argiope argentata',       icon: '🕷️', base: 680000  },
+      { id: 'libelula', name: 'Libélula-sanguínea',  sci: 'Erythrodiplax umbrata',   icon: '🪰', base: 310000  },
+      { id: 'vagalume', name: 'Vaga-lume',            sci: 'Lampyris noctiluca',      icon: '✨', base: 490000  },
+    ]
+  },
+  {
+    id: 'londrina',
+    name: 'Londrina',
+    region: 'Norte · PR',
+    desc: 'Maior cidade do norte paranaense, clima tropical com chuvas bem distribuídas. Enorme diversidade de coleópteros e dípteros.',
+    insects: [
+      { id: 'grilo',    name: 'Grilo-do-campo',      sci: 'Gryllus assimilis',       icon: '🦗', base: 890000  },
+      { id: 'besouro',  name: 'Besouro-rola-bosta',  sci: 'Dichotomius anaglypticus',icon: '🪲', base: 560000  },
+      { id: 'aranha',   name: 'Aranha-caranguejeira',sci: 'Acanthoscurria natalensis',icon:'🕷️', base: 175000  },
+      { id: 'mosca',    name: 'Mosca-das-frutas',     sci: 'Ceratitis capitata',      icon: '🦟', base: 2100000 },
+    ]
+  },
+  {
+    id: 'maringa',
+    name: 'Maringá',
+    region: 'Noroeste · PR',
+    desc: 'Cidade jardim com ampla arborização urbana. O corredor de ipês e matas ciliares sustentam populações densas de insetos polinizadores.',
+    insects: [
+      { id: 'abelha',   name: 'Abelha-jataí',        sci: 'Tetragonisca angustula',  icon: '🐝', base: 3200000 },
+      { id: 'grilo',    name: 'Grilo-do-campo',       sci: 'Gryllus assimilis',       icon: '🦗', base: 720000  },
+      { id: 'besouro',  name: 'Besouro-dourado',      sci: 'Chrysina aurigans',       icon: '🪲', base: 230000  },
+      { id: 'mariposa', name: 'Mariposa-esfinge',     sci: 'Manduca sexta',           icon: '🦋', base: 410000  },
+    ]
+  },
+  {
+    id: 'foz',
+    name: 'Foz do Iguaçu',
+    region: 'Oeste · PR',
+    desc: 'Próxima à Floresta Atlântica das Cataratas. Biodiversidade excepcional — uma das regiões com maior riqueza de espécies de insetos do Brasil.',
+    insects: [
+      { id: 'borboleta', name: 'Borboleta-morpho',   sci: 'Morpho menelaus',         icon: '🦋', base: 1800000 },
+      { id: 'grilo',     name: 'Grilo-do-campo',     sci: 'Gryllus assimilis',       icon: '🦗', base: 950000  },
+      { id: 'formiga',   name: 'Formiga-saúva',      sci: 'Atta laevigata',          icon: '🐜', base: 8400000 },
+      { id: 'libelula',  name: 'Libélula-gigante',   sci: 'Megaloprepus caerulatus', icon: '🪰', base: 260000  },
+    ]
+  },
+];
+
+// ════════════════════════════════════════════════
+// ESTADO DOS CONTADORES
+// ════════════════════════════════════════════════
+// counters[cityId][insectId] = { value, el, timer }
+const counters = {};
+
+function fmt(n) { return n.toLocaleString('pt-BR'); }
+
+function startCounter(cityId, insectId, base, elId) {
+  if (!counters[cityId]) counters[cityId] = {};
+  let value = base;
+
+  function tick() {
+    const delta = 1 + Math.floor(Math.random() * 2);
+    const dir   = Math.random() > .5 ? 1 : -1;
+    value = Math.max(0, value + delta * dir);
+
+    const el = document.getElementById(elId);
+    if (el) {
+      el.classList.add('flash');
+      setTimeout(() => {
+        el.textContent = fmt(value);
+        el.classList.remove('flash');
+      }, 240);
+    }
+
+    const delay = 1800 + Math.random() * 1700;
+    counters[cityId][insectId] = { value, timer: setTimeout(tick, delay) };
+  }
+
+  const delay = 1800 + Math.random() * 1700 + Math.random() * 800;
+  counters[cityId][insectId] = { value, timer: setTimeout(tick, delay) };
+}
+
+// ════════════════════════════════════════════════
+// BUILD UI
+// ════════════════════════════════════════════════
+function buildUI() {
+  const tabsEl   = document.getElementById('cityTabs');
+  const panelsEl = document.getElementById('cityPanels');
+
+  CITIES.forEach((city, ci) => {
+    // TAB
+    const tab = document.createElement('button');
+    tab.className = 'city-tab' + (ci === 0 ? ' active' : '');
+    tab.textContent = city.name;
+    tab.dataset.city = city.id;
+    tab.onclick = () => switchCity(city.id);
+    tabsEl.appendChild(tab);
+
+    // PANEL
+    const panel = document.createElement('div');
+    panel.className = 'city-panel' + (ci === 0 ? ' active' : '');
+    panel.id = 'panel-' + city.id;
+
+    // header
+    panel.innerHTML = `
+      <div class="city-header">
+        <span class="city-name">${city.name}</span>
+        <span class="city-region">📍 ${city.region}</span>
+      </div>
+      <p class="city-desc">${city.desc}</p>
+
+      <div class="insect-select-wrap">
+        <label class="insect-select-label" for="sel-${city.id}">Selecionar inseto</label>
+        <select class="insect-select" id="sel-${city.id}" onchange="switchInsect('${city.id}', this.value)">
+          ${city.insects.map(ins =>
+            `<option value="${ins.id}">${ins.icon} ${ins.name}</option>`
+          ).join('')}
+        </select>
+      </div>
+    `;
+
+    // cards (um por inseto, só o primeiro visível)
+    city.insects.forEach((ins, ii) => {
+      const cardId  = `card-${city.id}-${ins.id}`;
+      const countId = `count-${city.id}-${ins.id}`;
+      const card = document.createElement('div');
+      card.className = 'counter-card';
+      card.id = cardId;
+      card.style.display = ii === 0 ? 'flex' : 'none';
+      card.innerHTML = `
+        <div class="insect-icon">${ins.icon}</div>
+        <div class="insect-name-display">${ins.name}</div>
+        <div class="insect-sci">${ins.sci}</div>
+        <div class="counter-value" id="${countId}">${fmt(ins.base)}</div>
+        <div class="live"><div class="live-dot"></div>atualizando em tempo real</div>
+      `;
+      panel.appendChild(card);
+
+      // inicia contador
+      startCounter(city.id, ins.id, ins.base, countId);
+    });
+
+    panelsEl.appendChild(panel);
+  });
+}
+
+// ════════════════════════════════════════════════
+// NAVEGAÇÃO
+// ════════════════════════════════════════════════
+function switchCity(cityId) {
+  document.querySelectorAll('.city-tab').forEach(t =>
+    t.classList.toggle('active', t.dataset.city === cityId));
+  document.querySelectorAll('.city-panel').forEach(p =>
+    p.classList.toggle('active', p.id === 'panel-' + cityId));
+}
+
+function switchInsect(cityId, insectId) {
+  const city = CITIES.find(c => c.id === cityId);
+  city.insects.forEach(ins => {
+    const card = document.getElementById(`card-${cityId}-${ins.id}`);
+    if (card) card.style.display = ins.id === insectId ? 'flex' : 'none';
+  });
+}
+
+// ════════════════════════════════════════════════
+// SUGESTÕES
+// ════════════════════════════════════════════════
+let wishes = [
+  { name: 'Borboleta-morpho', votes: 14 },
+  { name: 'Vagalume',          votes: 11 },
+  { name: 'Louva-a-deus',      votes: 9  },
+  { name: 'Mariposa gigante',  votes: 6  },
+  { name: 'Barata-d\'água',    votes: 4  },
+];
+
+function renderWishlist() {
+  const el = document.getElementById('wishlist');
+  el.innerHTML = '';
+  [...wishes].sort((a,b) => b.votes - a.votes).forEach(w => {
+    const tag = document.createElement('div');
+    tag.className = 'wish-tag';
+    tag.innerHTML = `
+      <span>${w.name}</span>
+      <span class="wish-votes" title="Votar" onclick="voteWish('${w.name}')">
+        +${w.votes}
+      </span>
+    `;
+    el.appendChild(tag);
+  });
+}
+
+function voteWish(name) {
+  const w = wishes.find(x => x.name === name);
+  if (w) { w.votes++; renderWishlist(); }
+}
+
+function submitSuggestion() {
+  const input = document.getElementById('suggestInput');
+  const val   = input.value.trim();
+  if (!val) return;
+
+  const existing = wishes.find(x => x.name.toLowerCase() === val.toLowerCase());
+  if (existing) {
+    existing.votes++;
+  } else {
+    wishes.push({ name: val, votes: 1 });
+  }
+
+  renderWishlist();
+  input.value = '';
+
+  const fb = document.getElementById('suggestFeedback');
+  fb.classList.add('show');
+  setTimeout(() => fb.classList.remove('show'), 2500);
+}
+
+// enter no input
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('suggestInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') submitSuggestion();
+  });
+});
+
+// ════════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════════
+buildUI();
+renderWishlist();
+</script>
+</body>
+</html>
+HTMLEOF
+echo "ok"
